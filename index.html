@@ -1,37 +1,19 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>엘리베이터 도착 예정시간</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>엘리베이터 도착시간</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="elevator-box">
-    <h2>엘리베이터 도착 예정시간</h2>
 
-    <div class="display">
-      <p>현재 엘리베이터 위치</p>
-      <h1 id="currentFloor">1층</h1>
-      <p>예상 도착 시간</p>
-      <h1 id="arrivalTime">0초</h1>
+  <div class="panel">
+    <div class="time-display" id="arrivalTime">
+      대기 중
     </div>
 
-    <div class="button-area">
-      <p>목표 층 선택</p>
-      <button onclick="selectFloor(2)">2층</button>
-      <button onclick="selectFloor(3)">3층</button>
-      <button onclick="selectFloor(4)">4층</button>
-      <button onclick="selectFloor(5)">5층</button>
-      <button onclick="selectFloor(6)">6층</button>
-      <button onclick="selectFloor(7)">7층</button>
-      <button onclick="selectFloor(8)">8층</button>
-    </div>
-
-    <button class="doorBtn" onclick="toggleDoorTime()">
-      닫힘 버튼 바로 누르기
-    </button>
-
-    <p class="info" id="doorInfo">문 열림/닫힘 시간: 8.60초</p>
+    <button onclick="callElevator('up')">▲</button>
+    <button onclick="callElevator('down')">▼</button>
   </div>
 
   <script src="script.js"></script>
