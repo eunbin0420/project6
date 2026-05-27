@@ -3,44 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>리얼 프리미엄 엘리베이터 시스템</title>
+    <title>프리미엄 8층 엘리베이터 시스템</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="user-floor-selector">
-        <label for="floor-select">현재 내 위치 :</label>
-        <select id="floor-select">
-            <option value="1">1층</option>
-            <option value="2">2층</option>
-            <option value="3">3층</option>
-            <option value="4" selected>4층</option>
-            <option value="5">5층</option>
-            <option value="6">6층</option>
-            <option value="7">7층</option>
-            <option value="8">8층</option>
+    <div id="current-floor-board">
+        <span class="board-label">SET MY FLOOR</span>
+        <select id="floor-picker">
+            <option value="1">1F</option>
+            <option value="2">2F</option>
+            <option value="3">3F</option>
+            <option value="4" selected>4F</option>
+            <option value="5">5F</option>
+            <option value="6">6F</option>
+            <option value="7">7F</option>
+            <option value="8">8F</option>
         </select>
     </div>
 
     <div class="elevator-panel">
-        <div class="screw top"></div>
-        
-        <div class="led-display">
-            <div class="direction-arrow" id="arrow">─</div>
-            <div class="floor-number" id="floor-num">01</div>
-            <div class="countdown-text" id="countdown-display"></div>
-        </div>
+        <div class="panel-inside">
+            <div class="screw top"></div>
+            
+            <div class="black-display">
+                <div class="led-arrow" id="display-arrow">─</div>
+                <div class="led-number" id="display-number">01</div>
+                <div class="led-timer" id="display-timer"></div>
+            </div>
 
-        <div class="button-container">
-            <button id="btn-up" class="action-button">
-                <svg viewBox="0 0 100 100"><polygon points="50,18 88,82 12,82"/></svg>
-            </button>
-            <button id="btn-down" class="action-button">
-                <svg viewBox="0 0 100 100"><polygon points="12,18 88,18 50,82"/></svg>
-            </button>
-        </div>
+            <div class="button-set">
+                <button id="btn-up" class="metal-button" aria-label="Up">
+                    <svg viewBox="0 0 100 100"><polygon points="50,18 88,82 12,82"/></svg>
+                </button>
+                <button id="btn-down" class="metal-button" aria-label="Down">
+                    <svg viewBox="0 0 100 100"><polygon points="12,18 88,18 50,82"/></svg>
+                </button>
+            </div>
 
-        <div class="screw bottom"></div>
+            <div class="screw bottom"></div>
+        </div>
     </div>
 
     <script src="script.js"></script>
