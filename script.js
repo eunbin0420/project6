@@ -1,5 +1,5 @@
-// 제공해주셨던 실측 데이터 (1층 기준 각 층별 도달 소요 시간)
-const BASE_TRAVEL_TIMES = {
+// 영수증 이미지 제공 실측 데이터 세트 반영 (1층 기준 각 층 소요 누적시간)
+const TIME_DATA = {
     1: 0.00,
     2: 9.02,
     3: 12.01,
@@ -10,103 +10,105 @@ const BASE_TRAVEL_TIMES = {
     8: 29.25
 };
 
-// 평균적인 한 층 이동 속도 계산 (데이터 외의 층 계산용: 약 4.17초/층)
-const AVG_SPEED_PER_FLOOR = 4.17; 
-
-// 시스템 내부 상태 정의
-let appState = {
-    myFloor: 4,               // 현재 사용자가 탑승을 대기중인 위치 (왼쪽 상단 표시용)
-    elevatorCurrentFloor: 12, // 엘리베이터의 현재 실시간 위치 (시작값은 사진처럼 12층)
-    elevatorDirection: '↑',   // 현재 디스플레이에 노출되는 이동 방향 기호
-    isProcessing: false,      // 호출 작동 중 중복 클릭 방지 플래그
-    systemTimer: null         // 실시간 카운트다운 인터벌 저장소
+let systemState = {
+    currentFloor: 1,      // 엘리베이터 시작 위치 (현실감 있게 1층부터 출발)
+    isMoving: false,
+    mainTimer: null,
+    floorTimer: null
 };
 
-// HTML 엘리먼트 정의
-const elDisplayDirection = document.getElementById('display-direction');
-const elDisplayFloor = document.getElementById('display-floor');
-const elArrivalTime = document.getElementById('arrival-time-display');
-const btnUp = document.getElementById('up-btn');
-const btnDown = document.getElementById('down-btn');
+// 요소 셀렉터 바인딩
+const elArrow = document.getElementById('arrow');
+const elFloorNum = document.getElementById('floor-num');
+const elCountdown = document.getElementById('countdown-display');
+const btnUp = document.getElementById('btn-up');
+const btnDown = document.getElementById('btn-down');
+const selectFloor = document.getElementById('floor-select');
 
-// 초기 화면 설정 랜더링
-function initDisplay() {
-    elDisplayDirection.textContent = appState.elevatorDirection;
-    elDisplayFloor.textContent = appState.elevatorCurrentFloor;
-    elArrivalTime.textContent = ""; // 초기 상태는 텍스트 없음
+// 디스플레이 초기화 함수
+function refreshDisplay() {
+    elFloorNum.textContent = String(systemState.currentFloor).padStart(2, '0');
 }
 
-// 두 층 사이의 실제 대기 시간을 데이터 기반으로 추출하는 계산 함수
-function calculateWaitTime(fromFloor, toFloor) {
-    if (BASE_TRAVEL_TIMES[fromFloor] !== undefined && BASE_TRAVEL_TIMES[toFloor] !== undefined) {
-        // 데이터가 존재하는 1~8층 구간은 실측 데이터 간의 차이 절대값으로 정확히 계산
-        return Math.abs(BASE_TRAVEL_TIMES[fromFloor] - BASE_TRAVEL_TIMES[toFloor]);
-    } else {
-        // 데이터 범위를 벗어나는 층(예: 12층)은 평균 층간 속도를 활용해 아날로그 계산
-        return Math.abs(fromFloor - toFloor) * AVG_SPEED_PER_FLOOR;
+// 핵심 구동 알고리즘 함수
+function callElevator(clickedDirection) {
+    if (systemState.isMoving) return;
+
+    // 실시간 동적 내 위치 설정 획득
+    const myFloor = parseInt(selectFloor.value);
+
+    // 예외 상황 처리: 이미 해당 층에 서 있을 경우
+    if (systemState.currentFloor === myFloor) {
+        elCountdown.textContent = "이미 해당 층에\n있습니다.";
+        setTimeout(() => elCountdown.textContent = "", 2000);
+        return;
     }
-}
 
-// 버튼 클릭 시 호출 이벤트 핸들러
-function handleCallRequest(buttonDirection) {
-    if (appState.isProcessing) return; // 이미 작동 중이면 작동 차단
+    systemState.isMoving = true;
     
-    appState.isProcessing = true;
-    
-    // 버튼 시각 활성화 활성 상태 부여
-    const targetButton = buttonDirection === 'up' ? btnUp : btnDown;
+    // 타겟 버튼에 활성화 클래스(빛 효과) 부여
+    const targetButton = clickedDirection === 'up' ? btnUp : btnDown;
     targetButton.classList.add('active');
 
-    // 사용자가 있는 4층까지 오기 위해 필요한 총 대기 시간 계산 (12층 -> 4층)
-    let remainingTime = calculateWaitTime(appState.elevatorCurrentFloor, appState.myFloor);
-    
-    // 엘리베이터가 현재 사용자보다 위에 있으므로 아래로 내려와야 함을 표시
-    appState.elevatorDirection = '↓';
-    elDisplayDirection.textContent = appState.elevatorDirection;
-
-    // 0.1초 단위 실시간 업데이트 루프 가동
-    const updateInterval = 100; 
-    const startFloor = appState.elevatorCurrentFloor;
-    const targetFloor = appState.myFloor;
+    // 실측 데이터 간 차이 절대값으로 총 소요시간 자동 환산
+    const startTime = TIME_DATA[systemState.currentFloor];
+    const endTime = TIME_DATA[myFloor];
+    let remainingTime = Math.abs(endTime - startTime);
     const totalDuration = remainingTime;
 
-    appState.systemTimer = setInterval(() => {
-        remainingTime -= (updateInterval / 1000);
+    // 움직이는 진행 방향성 기호 확정
+    const directionIndicator = myFloor > systemState.currentFloor ? '↑' : '↓';
+    elArrow.textContent = directionIndicator;
+
+    const startFloor = systemState.currentFloor;
+    const targetFloor = myFloor;
+
+    // 1. 디스플레이 하단 초 단위 카운트다운 가동 (0.05초 단위 부드러운 순환)
+    const tick = 50;
+    systemState.mainTimer = setInterval(() => {
+        remainingTime -= (tick / 1000);
 
         if (remainingTime <= 0) {
-            // 목적지(4층) 도달 완료 시점 처리
-            clearInterval(appState.systemTimer);
-            
-            elDisplayFloor.textContent = "04";
-            elArrivalTime.textContent = "0.00초 후\n도착";
-            
-            // 승강기 문 열림 연출 후 시스템 리셋 프로세스
+            clearInterval(systemState.mainTimer);
+            clearInterval(systemState.floorTimer);
+
+            // 도착 완료 시점 디스플레이 동기화
+            systemState.currentFloor = targetFloor;
+            refreshDisplay();
+            elArrow.textContent = "─";
+            elCountdown.textContent = "0.00초 뒤\n도착 완료";
+
+            // 문 열림 상태 유지 후 원상 복귀 리셋 프로세스
             setTimeout(() => {
-                elArrivalTime.textContent = "";
+                elCountdown.textContent = "";
                 targetButton.classList.remove('active');
-                appState.elevatorCurrentFloor = appState.myFloor;
-                appState.elevatorDirection = '↑'; // 기본 대기 상태 방향 전환
-                appState.isProcessing = false;
-                initDisplay();
-            }, 2500);
+                systemState.isMoving = false;
+            }, 3000);
             return;
         }
 
-        // 실시간 잔여 초 화면 출력 (소수점 2자리 포맷팅)
-        elArrivalTime.textContent = `${remainingTime.toFixed(2)}초 후\n도착`;
+        // 사용자가 스케치해 준 양식 그대로 출력 적용
+        elCountdown.textContent = `${remainingTime.toFixed(2)}초 뒤\n도착`;
+    }, tick);
 
-        // 진행 시간에 비례하여 디스플레이상의 엘리베이터 층수를 부드럽게 감소 연출
-        let progress = 1 - (remainingTime / totalDuration);
-        let currentEstimatedFloor = startFloor - (startFloor - targetFloor) * progress;
-        
-        elDisplayFloor.textContent = String(Math.round(currentEstimatedFloor)).padStart(2, '0');
+    // 2. 진짜 엘리베이터처럼 실시간 층수가 차례대로 바뀌며 올라가는 연출
+    const totalFloorsToMove = Math.abs(targetFloor - startFloor);
+    // 각 구간의 정밀 실측 기반 한 층당 주행 인터벌 계산
+    const intervalPerFloor = (totalDuration / totalFloorsToMove) * 1000;
 
-    }, updateInterval);
+    systemState.floorTimer = setInterval(() => {
+        if (systemState.currentFloor !== targetFloor) {
+            systemState.currentFloor += (targetFloor > startFloor) ? 1 : -1;
+            refreshDisplay();
+        } else {
+            clearInterval(systemState.floorTimer);
+        }
+    }, intervalPerFloor);
 }
 
-// 이벤트 리스너 바인딩
-btnUp.addEventListener('click', () => handleCallRequest('up'));
-btnDown.addEventListener('click', () => handleCallRequest('down'));
+// 버튼 클릭 이벤트 리스너 할당
+btnUp.addEventListener('click', () => callElevator('up'));
+btnDown.addEventListener('click', () => callElevator('down'));
 
-// 초기 구동
-initDisplay();
+// 최초 기기 랜더링 실행
+refreshDisplay();
