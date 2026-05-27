@@ -5,156 +5,173 @@
 }
 
 body {
-    background: radial-gradient(circle at center, #2e3943 0%, #151b21 100%);
+    background: radial-gradient(circle at center, #232d37 0%, #0d1115 100%);
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    font-family: 'Malgun Gothic', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     overflow: hidden;
 }
 
-/* 왼쪽 상단 현재 층 선택 제어판 */
-#user-floor-selector {
+/* 왼쪽 상단 현재 층 선택 컨트롤 보드 */
+#current-floor-board {
     position: absolute;
-    top: 30px;
-    left: 30px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 12px 18px;
-    border-radius: 10px;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    backdrop-filter: blur(10px);
-}
-
-#user-floor-selector select {
-    background: #222;
-    color: #fff;
-    border: 1px solid #555;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    outline: none;
-    cursor: pointer;
-}
-
-/* 실물 브러쉬드 메탈 질감의 엘리베이터 패널 */
-.elevator-panel {
-    background: linear-gradient(145deg, #e6eae4, #9ca1a6);
-    width: 220px;
-    height: 640px;
-    border-radius: 30px;
-    border: 2px solid #7a8084;
-    padding: 45px 20px;
+    top: 35px;
+    left: 35px;
+    background: rgba(20, 28, 36, 0.7);
+    border: 2px solid #00d2ff;
+    border-radius: 14px;
+    padding: 10px 18px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    position: relative;
-    box-shadow: 
-        0 30px 60px rgba(0, 0, 0, 0.6),
-        inset 2px 2px 3px rgba(255, 255, 255, 0.8),
-        inset -2px -2px 4px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 20px rgba(0, 210, 255, 0.25), inset 0 0 10px rgba(0, 210, 255, 0.15);
+    backdrop-filter: blur(8px);
+    z-index: 10;
 }
 
-/* 상하단 금속 마감 고정 나사 디테일 */
+#current-floor-board .board-label {
+    font-size: 0.65rem;
+    color: #00d2ff;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    margin-bottom: 5px;
+}
+
+#current-floor-board select {
+    background: #11161b;
+    color: #ffffff;
+    border: 1px solid #00d2ff;
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 1.4rem;
+    font-weight: bold;
+    outline: none;
+    cursor: pointer;
+    text-align: center;
+}
+
+/* 리얼 헤어라인 메탈 외관 패널 */
+.elevator-panel {
+    background: linear-gradient(135deg, #f0f4f8 0%, #a1a8b0 45%, #7a828a 100%);
+    width: 220px;
+    height: 640px;
+    border-radius: 32px;
+    padding: 4px;
+    box-shadow: 
+        0 30px 70px rgba(0, 0, 0, 0.6),
+        inset 0 3px 4px rgba(255, 255, 255, 0.85);
+}
+
+.panel-inside {
+    background: linear-gradient(to right, #d4d9de 0%, #b3b9bf 25%, #9aa0a6 75%, #a4abb2 100%);
+    width: 100%;
+    height: 100%;
+    border-radius: 28px;
+    border: 1px solid #7d848b;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px 20px;
+    position: relative;
+}
+
+/* 정밀 가공 나사못 마감 부속 */
 .screw {
     width: 14px;
     height: 14px;
-    background: radial-gradient(circle at 35% 35%, #fff, #999 60%, #444 100%);
+    background: radial-gradient(circle at 35% 35%, #ffffff, #9ea4aa 60%, #484f54 100%);
     border-radius: 50%;
     position: absolute;
-    box-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.4);
 }
 .screw::before {
     content: '';
     position: absolute;
     top: 6px; left: 2px; width: 10px; height: 2px;
-    background-color: #333;
+    background-color: #2b3033;
 }
-.screw.top { top: 18px; }
-.screw.bottom { bottom: 18px; }
+.screw.top { top: 20px; }
+.screw.bottom { bottom: 20px; }
 
-/* 리얼 다크 글로시 LED 디스플레이 하우징 */
-.led-display {
-    background: radial-gradient(circle at center, #1a0505 0%, #050000 100%);
+/* [대폭 개선] 칠흑 같은 리얼 블랙 글래스 디스플레이 */
+.black-display {
+    background: radial-gradient(circle at center, #180303 0%, #050000 100%);
     width: 100%;
-    height: 300px;
-    border-radius: 12px;
-    border: 3px solid #4a5054;
+    height: 290px;
+    border-radius: 14px;
+    border: 3px solid #454b50;
     box-shadow: 
-        inset 0 5px 15px rgba(0,0,0,0.9),
-        0 1px 2px rgba(255,255,255,0.5);
+        inset 0 8px 20px rgba(0,0,0,0.95),
+        0 1px 2px rgba(255,255,255,0.6);
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 25px 10px 20px 10px;
+    padding: 25px 12px 20px 12px;
     position: relative;
     overflow: hidden;
     margin-bottom: auto;
 }
 
-/* 디스플레이 표면 리얼 유리 반사광 필터 */
-.led-display::after {
+/* 유리 덮개 고유의 선명한 경사 반사광 필터 */
+.black-display::after {
     content: '';
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 50%;
-    background: linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(255,255,255,0));
+    top: 0; left: 0; width: 120%; height: 55%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.01) 50%, rgba(255,255,255,0) 100%);
     pointer-events: none;
 }
 
-/* 고휘도 선명한 레드 LED 효과 */
-.direction-arrow {
-    color: #ff1e1e;
-    font-size: 3.5rem;
+/* 칠흑 속에서 빛나는 고선명 레드 LED 도트 */
+.led-arrow {
+    color: #ff1818;
+    font-size: 3.4rem;
     font-weight: bold;
     height: 50px;
     line-height: 50px;
-    text-shadow: 0 0 12px rgba(255, 30, 30, 0.8), 0 0 25px rgba(255, 30, 30, 0.5);
+    text-shadow: 0 0 12px #ff0000, 0 0 25px #ff0000;
 }
 
-.floor-number {
-    color: #ff1e1e;
+.led-number {
+    color: #ff1818;
     font-size: 5.8rem;
     font-family: 'Courier New', Courier, monospace;
     font-weight: 900;
     line-height: 1;
-    text-shadow: 0 0 15px rgba(255, 30, 30, 0.8), 0 0 30px rgba(255, 30, 30, 0.5);
-    margin-top: 5px;
+    text-shadow: 0 0 15px #ff0000, 0 0 30px #ff0000;
+    margin-top: 2px;
 }
 
-/* 이미지 요구사항: 내부 하단 배치 소수점 시간 텍스트 */
-.countdown-text {
+/* 하단 디지털 알림 스크린 텍스트 */
+.led-timer {
     margin-top: auto;
-    color: #ff2a2a;
+    color: #ff2222;
     font-size: 1.05rem;
     font-weight: bold;
     text-align: center;
     line-height: 1.4;
     letter-spacing: 0.5px;
-    min-height: 45px;
-    text-shadow: 0 0 10px rgba(255, 42, 42, 0.7);
+    min-height: 48px;
+    text-shadow: 0 0 10px #ff0000;
     white-space: pre-line;
 }
 
-/* 버튼 레이아웃 구조 */
-.button-container {
+/* 컴팩트한 물리 버튼 레이아웃 상자 */
+.button-set {
     display: flex;
     flex-direction: column;
-    gap: 25px;
-    margin-bottom: 10px;
+    gap: 22px;
+    margin-bottom: 5px;
 }
 
-/* 진짜 아날로그 메탈 푸시 버튼 커스텀 */
-.action-button {
-    width: 84px;
-    height: 66px;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 25%, #b2bfc8 75%, #8895a0 100%);
-    border: 1px solid #6b747a;
+/* 입체감이 살아 숨쉬는 실물형 크롬 푸시 버튼 */
+.metal-button {
+    width: 86px;
+    height: 68px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #ffffff 0%, #e6e6e6 20%, #b8c5ce 75%, #8fa0ac 100%);
+    border: 1px solid #707980;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -162,40 +179,40 @@ body {
     outline: none;
     position: relative;
     box-shadow: 
-        0 6px 0 #575f64,
-        0 10px 15px rgba(0,0,0,0.4),
-        inset 0 2px 3px #fff;
-    transition: all 0.05s ease;
+        0 6px 0 #5b6368,
+        0 12px 18px rgba(0,0,0,0.45),
+        inset 0 2px 3px rgba(255,255,255,0.9);
+    transition: all 0.05s cubic-bezier(0.33, 1, 0.68, 1);
 }
 
-/* 버튼이 직접 눌릴 때 물리적 하강 효과 */
-.action-button:active, .action-button.active {
+/* 실제 손가락으로 밀어 눌렀을 때 서서히 내려앉는 깊이 표현 */
+.metal-button:active, .metal-button.active {
     box-shadow: 
-        0 1px 0 #3a4043,
-        0 2px 5px rgba(0,0,0,0.5),
-        inset 0 2px 5px rgba(0,0,0,0.2);
+        0 1px 0 #3d4347,
+        0 3px 6px rgba(0,0,0,0.5),
+        inset 0 2px 6px rgba(0,0,0,0.25);
     transform: translateY(5px);
 }
 
-/* 오렌지 계열 내부 음각 화살표 그래픽 */
-.action-button svg {
+/* 음각으로 정밀 처리된 내부 주황색 엠블럼 화살표 */
+.metal-button svg {
     width: 32px;
     height: 32px;
     fill: #d35400;
-    filter: drop-shadow(0px 1px 1px rgba(255,255,255,0.8));
-    transition: all 0.1s ease;
+    filter: drop-shadow(0px 1px 1px rgba(255,255,255,0.85));
+    transition: fill 0.1s ease, filter 0.1s ease;
 }
 
-/* 호출 버튼 라이트 가동 연출 */
-.action-button.active {
+/* 버튼 활성화(호출 접수) 시 하이라이트 발광 컬러 링 구현 */
+.metal-button.active {
     border-color: #ff9f43;
     box-shadow: 
-        0 1px 0 #3a4043,
-        0 0 15px rgba(243, 156, 18, 0.6),
-        inset 0 1px 3px rgba(0,0,0,0.1);
+        0 1px 0 #3d4347,
+        0 0 18px rgba(243, 156, 18, 0.75),
+        inset 0 1px 2px rgba(0,0,0,0.1);
 }
 
-.action-button.active svg {
+.metal-button.active svg {
     fill: #ff9f43;
-    filter: drop-shadow(0px 0px 8px rgba(255, 159, 67, 1));
+    filter: drop-shadow(0px 0px 10px rgba(255, 159, 67, 1));
 }
