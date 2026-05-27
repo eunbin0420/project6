@@ -1,32 +1,53 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>엘리베이터 시스템</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>엘리베이터 도착시간</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-    <div id="current-floor">현재 위치: 1층</div>
+<div class="panel">
 
-    <div class="panel">
-        <div class="display">
-            <div class="direction" id="display-direction">&uarr;</div>
-            <div class="floor" id="display-floor">12</div>
+    <!-- 엘리베이터 화면 -->
+    <div class="display">
+
+        <div class="arrow">
+            ↑
         </div>
 
-        <div class="wait-time-display" id="wait-time">--초</div>
-
-        <div class="buttons">
-            <button id="up-btn">
-                <svg viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90"/></svg>
-            </button>
-            <button id="down-btn">
-                <svg viewBox="0 0 100 100"><polygon points="10,10 90,10 50,90"/></svg>
-            </button>
+        <div class="floor">
+            12
         </div>
+
+        <!-- 도착시간 표시 -->
+        <div class="time" id="timeText">
+            대기 중
+        </div>
+
     </div>
+
+    <!-- 층 선택 -->
+    <select id="floorSelect">
+        <option value="2">2층</option>
+        <option value="3">3층</option>
+        <option value="4">4층</option>
+        <option value="5">5층</option>
+        <option value="6">6층</option>
+        <option value="7">7층</option>
+        <option value="8">8층</option>
+    </select>
+
+    <!-- 위 버튼 -->
+    <button class="btn" onclick="callElevator(true)">
+        ▲
+    </button>
+
+    <!-- 아래 버튼 -->
+    <button class="btn" onclick="callElevator(false)">
+        ▼
+    </button>
+
 </div>
 
 <script src="script.js"></script>
