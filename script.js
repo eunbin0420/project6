@@ -1,84 +1,44 @@
-body{
-    margin:0;
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:#e5e5e5;
-    font-family:Arial;
-}
+// 실제 측정 데이터
+const moveTime = {
+    2: 9.02,
+    3: 12.01,
+    4: 16.31,
+    5: 19.88,
+    6: 22.27,
+    7: 25.84,
+    8: 29.25
+};
 
-.panel{
-    width:120px;
-    background:#cfcfcf;
-    border-radius:35px;
-    padding:20px 10px;
-    text-align:center;
-}
+// 버튼 눌렀을 때
+function callElevator(isFastClose){
 
-.display{
-    width:80px;
-    height:260px;
-    background:#120d0d;
+    // 선택 층
+    const floor =
+        document.getElementById("floorSelect").value;
 
-    margin:0 auto 15px;
-    border-radius:4px;
+    // 이동 시간
+    const elevatorMoveTime =
+        moveTime[floor];
 
-    display:flex;
-    flex-direction:column;
-    justify-content:flex-start;
-    align-items:center;
+    // 문 닫힘 시간
+    let doorTime;
 
-    padding-top:15px;
-}
+    // ▲ 버튼
+    if(isFastClose){
+        doorTime = 8.60;
+    }
 
-.arrow{
-    color:red;
-    font-size:65px;
-    font-weight:bold;
-    line-height:1;
-}
+    // ▼ 버튼
+    else{
+        doorTime = 17.22;
+    }
 
-.floor{
-    color:red;
-    font-size:75px;
-    font-weight:bold;
-    line-height:1;
-}
+    // 최종 시간 계산
+    const totalTime =
+        elevatorMoveTime + doorTime;
 
-.time{
-    color:red;
-    font-size:18px;
-    font-weight:bold;
-
-    margin-top:20px;
-    text-align:center;
-    line-height:1.5;
-}
-
-select{
-    width:70px;
-    margin-bottom:12px;
-    padding:4px;
-}
-
-.btn{
-    width:55px;
-    height:35px;
-
-    margin:8px 0;
-
-    font-size:22px;
-
-    color:#ff944d;
-    background:#f2f2f2;
-
-    border:2px solid #bdbdbd;
-    border-radius:8px;
-
-    cursor:pointer;
-}
-
-.btn:hover{
-    background:#ddd;
+    // 화면 출력
+    document.getElementById("timeText").innerHTML =
+        totalTime.toFixed(2) +
+        "초<br>뒤 도착";
 }
