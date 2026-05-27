@@ -1,77 +1,61 @@
-body {
-  margin: 0;
-  background-color: #e9eef3;
-  font-family: Arial, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#dcdcdc;
+    font-family:Arial;
 }
 
-.elevator-box {
-  width: 360px;
-  background-color: white;
-  padding: 25px;
-  border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+.elevator-panel{
+    width:95px;
+    background:#cfcfcf;
+    border-radius:35px;
+    padding:12px 10px;
+    text-align:center;
+    box-shadow:0 0 10px rgba(0,0,0,0.2);
 }
 
-h2 {
-  margin-bottom: 20px;
+.display{
+    width:70px;
+    height:150px;
+    background:#111;
+    margin:0 auto 15px;
+    border-radius:4px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    color:red;
+    font-size:20px;
+    font-weight:bold;
+    line-height:1.4;
 }
 
-.display {
-  background-color: #111;
-  color: #00ff88;
-  padding: 20px;
-  border-radius: 15px;
-  margin-bottom: 20px;
+select{
+    width:70px;
+    margin-bottom:12px;
+    padding:4px;
+    font-size:14px;
 }
 
-.display p {
-  color: #ccc;
-  margin: 8px 0;
+.btn{
+    width:52px;
+    height:34px;
+    margin:7px 0;
+    font-size:22px;
+
+    color:#ff8c42;
+    background:#efefef;
+
+    border:2px solid #bdbdbd;
+    border-radius:8px;
+
+    cursor:pointer;
 }
 
-.display h1 {
-  margin: 5px 0 15px;
-  font-size: 34px;
-}
-
-.button-area {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.button-area p {
-  grid-column: span 2;
-  font-weight: bold;
-}
-
-button {
-  padding: 15px;
-  font-size: 18px;
-  border: none;
-  border-radius: 12px;
-  background-color: #2f80ed;
-  color: white;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #1c5fb8;
-}
-
-.doorBtn {
-  margin-top: 20px;
-  width: 100%;
-  background-color: #ff9800;
-}
-
-.info {
-  margin-top: 15px;
-  color: #555;
-  font-size: 14px;
+.btn:hover{
+    background:#ddd;
 }
