@@ -1,35 +1,44 @@
-let currentFloor = 1;
-let doorCloseFast = true;
-
-// 교수님 피드백 반영: 실제 측정 데이터 기반
-const moveTimeData = {
-  2: 9.02,
-  3: 12.01,
-  4: 16.31,
-  5: 19.88,
-  6: 22.27,
-  7: 25.84,
-  8: 29.25
+// 실제 측정 이동 시간 데이터
+const moveTime = {
+    2: 9.02,
+    3: 12.01,
+    4: 16.31,
+    5: 19.88,
+    6: 22.27,
+    7: 25.84,
+    8: 29.25
 };
 
-function selectFloor(targetFloor) {
-  let doorTime = doorCloseFast ? 8.60 : 17.22;
+// 버튼 눌렀을 때
+function callElevator(isFastClose){
 
-  let moveTime = moveTimeData[targetFloor];
+    // 선택 층
+    const floor =
+        document.getElementById("floor").value;
 
-  // 도착시간 = 이동시간 + 문 열림/닫힘 시간
-  let arrivalTime = moveTime + doorTime;
+    // 이동 시간
+    const elevatorTime =
+        moveTime[floor];
 
-  document.getElementById("currentFloor").innerText = currentFloor + "층";
-  document.getElementById("arrivalTime").innerText = arrivalTime.toFixed(2) + "초";
-}
+    // 문 닫힘 시간
+    let doorTime;
 
-function toggleDoorTime() {
-  doorCloseFast = !doorCloseFast;
+    // ▲ 버튼
+    if(isFastClose){
+        doorTime = 8.60;
+    }
 
-  let doorText = doorCloseFast
-    ? "문 열림/닫힘 시간: 8.60초"
-    : "문 열림/닫힘 시간: 17.22초";
+    // ▼ 버튼
+    else{
+        doorTime = 17.22;
+    }
 
-  document.getElementById("doorInfo").innerText = doorText;
+    // 총 시간 계산
+    const totalTime =
+        elevatorTime + doorTime;
+
+    // 화면 표시
+    document.getElementById("display").innerHTML =
+        Math.round(totalTime) +
+        "<br>초";
 }
