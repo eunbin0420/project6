@@ -1,4 +1,4 @@
-// 제공해주신 1층 기준 8층 구간 전용 정밀 실측 이동 타임 테이블 데이터셋
+// 제공해주신 1층 기준 각 층 누적 도달시간 정밀 데이터셋 매핑
 const ACCURATE_SPEED_DATA = {
     1: 0.00,
     2: 9.02,
@@ -11,13 +11,13 @@ const ACCURATE_SPEED_DATA = {
 };
 
 let deviceState = {
-    elevatorFloor: 1,      // 승강기 초기 대기 위치 (1층 기본 출발)
+    elevatorFloor: 1,      // 초기 엘리베이터 정차 위치 (1층 기본 세팅)
     isOperating: false,
     timerInterval: null,
     stepInterval: null
 };
 
-// UI 컴포넌트 인터페이스 캐싱
+// DOM 하드웨어 요소 구조 바인딩
 const uiArrow = document.getElementById('display-arrow');
 const uiNumber = document.getElementById('display-number');
 const uiTimer = document.getElementById('display-timer');
@@ -29,14 +29,14 @@ function refreshPanelLayout() {
     uiNumber.textContent = String(deviceState.elevatorFloor).padStart(2, '0');
 }
 
-// 엘리베이터 이동 지령 메인 관제 함수
+// 엘리베이터 호출 기전 가동 엔진 함수
 function processCallSignal(dirType) {
     if (deviceState.isOperating) return;
 
-    // 왼쪽 상단 드롭다운에서 선택된 실시간 탑승자 현재 대기 층값 로드
+    // 왼쪽 상단 CURRENT FLOOR 셀렉터 박스에서 탑승객 위치 데이터 동적 수집
     const userTargetFloor = parseInt(floorPicker.value);
 
-    // 사용자가 현재 엘리베이터가 서있는 위치와 같은 층수를 불렀을 때 즉시 예외처리
+    // 예외 검출: 이미 해당 층에 대기 완료되어 움직일 필요가 없을 때
     if (deviceState.elevatorFloor === userTargetFloor) {
         uiTimer.textContent = "이미 현재 층에\n대기중입니다.";
         setTimeout(() => uiTimer.textContent = "", 2000);
@@ -45,24 +45,24 @@ function processCallSignal(dirType) {
 
     deviceState.isOperating = true;
     
-    // 버튼 오렌지 백라이트 등 점등 작동
+    // 타겟 물리 버튼 등 켜짐 활성화 연출
     const clickedButton = dirType === 'up' ? upButton : downButton;
     clickedButton.classList.add('active');
 
-    // 영수증 이미지 데이터 세트 간 오차를 빼내 이동에 걸리는 순수 잔여 초 도출
+    // 시간 규격 필드 연산하여 총 주행할 정밀 잔여 시간 초단위 도출
     const initialFloorSec = ACCURATE_SPEED_DATA[deviceState.elevatorFloor];
     const destinationFloorSec = ACCURATE_SPEED_DATA[userTargetFloor];
     let remainSeconds = Math.abs(destinationFloorSec - initialFloorSec);
     const totalMoveDuration = remainSeconds;
 
-    // 움직이는 이동 목적지에 따른 상하 LED 화살표 기호 갱신
+    // 주행 흐름 레이블 화살표 정의 출력
     const arrowSymbol = userTargetFloor > deviceState.elevatorFloor ? '↑' : '↓';
     uiArrow.textContent = arrowSymbol;
 
     const sourceFloor = deviceState.elevatorFloor;
     const endFloor = userTargetFloor;
 
-    // 1. 검은색 화면 하단에 소수점 2자리로 카운트다운을 전개하는 루프 엔진 (0.05초 단위)
+    // 1. 블랙 스크린 하단 영역 실시간 소수점 카운트다운 타이머 인터벌 (50ms 단위 루프)
     const clockTick = 50;
     deviceState.timerInterval = setInterval(() => {
         remainSeconds -= (clockTick / 1000);
@@ -71,13 +71,13 @@ function processCallSignal(dirType) {
             clearInterval(deviceState.timerInterval);
             clearInterval(deviceState.stepInterval);
 
-            // 해당 타겟 층 안착 및 완료 이벤트 시그널 전개
+            // 목적지 안전 정착 동기화 처리
             deviceState.elevatorFloor = endFloor;
             refreshPanelLayout();
             uiArrow.textContent = "─";
             uiTimer.textContent = "0.00초 뒤\n도착 완료";
 
-            // 문이 열리는 시간을 대기한 뒤 버튼 라이트 소등 및 락 해제
+            // 도어 오픈 연출 대기 후 시스템 리셋 및 락 해제
             setTimeout(() => {
                 uiTimer.textContent = "";
                 clickedButton.classList.remove('active');
@@ -86,11 +86,11 @@ function processCallSignal(dirType) {
             return;
         }
 
-        // 사용자가 스케치해준 서식 형태 그대로 블랙 스크린에 반영 출력
+        // 스케치 지령서 요구사항 규격대로 텍스트 출력 사출
         uiTimer.textContent = `${remainSeconds.toFixed(2)}초 뒤\n뒤 도착`;
     }, clockTick);
 
-    // 2. 진짜 엘리베이터처럼 실시간 숫자가 순차적으로 차례대로 변하며 이동하는 등속 알고리즘
+    // 2. 아날로그 느낌을 극대화한 실시간 층수 게이지 1칸씩 순차 누진 이동 알고리즘
     const floorsCount = Math.abs(endFloor - sourceFloor);
     const intervalTimePerFloor = (totalMoveDuration / floorsCount) * 1000;
 
@@ -104,9 +104,9 @@ function processCallSignal(dirType) {
     }, intervalTimePerFloor);
 }
 
-// 마우스 클릭 이벤트 트리거 연동
+// 클릭 신호 인터페이스 바인딩
 upButton.addEventListener('click', () => processCallSignal('up'));
 downButton.addEventListener('click', () => processCallSignal('down'));
 
-// 초기 셋업 빌드 구동
+// 시스템 콜 초기 부팅 가동
 refreshPanelLayout();
