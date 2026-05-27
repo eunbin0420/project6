@@ -1,5 +1,5 @@
-// 영수증 이미지 제공 실측 데이터 세트 반영 (1층 기준 각 층 소요 누적시간)
-const TIME_DATA = {
+// 업로드해주신 영수증 이미지의 실제 1층 기준 측정 규격 시간 데이터 셋 (1F ~ 8F)
+const STEP_TIME_TABLE = {
     1: 0.00,
     2: 9.02,
     3: 12.01,
@@ -10,105 +10,103 @@ const TIME_DATA = {
     8: 29.25
 };
 
-let systemState = {
-    currentFloor: 1,      // 엘리베이터 시작 위치 (현실감 있게 1층부터 출발)
-    isMoving: false,
-    mainTimer: null,
-    floorTimer: null
+let elevatorController = {
+    virtualFloor: 1,      // 승강기 초기 대기 층수 (1층 시작)
+    isActive: false,
+    timerCore: null,
+    moveCore: null
 };
 
-// 요소 셀렉터 바인딩
-const elArrow = document.getElementById('arrow');
-const elFloorNum = document.getElementById('floor-num');
-const elCountdown = document.getElementById('countdown-display');
+// 물리 매핑 인터페이스 개체 노출
+const elArrow = document.getElementById('display-arrow');
+const elNum = document.getElementById('display-number');
+const elTimer = document.getElementById('display-timer');
 const btnUp = document.getElementById('btn-up');
 const btnDown = document.getElementById('btn-down');
-const selectFloor = document.getElementById('floor-select');
+const floorPicker = document.getElementById('floor-picker');
 
-// 디스플레이 초기화 함수
-function refreshDisplay() {
-    elFloorNum.textContent = String(systemState.currentFloor).padStart(2, '0');
+function renderSystemPanel() {
+    elNum.textContent = String(elevatorController.virtualFloor).padStart(2, '0');
 }
 
-// 핵심 구동 알고리즘 함수
-function callElevator(clickedDirection) {
-    if (systemState.isMoving) return;
+// 동작 가동 허브 제어 장치
+function onCallSignal(actionDir) {
+    if (elevatorController.isActive) return;
 
-    // 실시간 동적 내 위치 설정 획득
-    const myFloor = parseInt(selectFloor.value);
+    // [변경] 사용자가 왼쪽 상단 드롭다운으로 실시간 변경한 층수 값 수집
+    const assignedUserFloor = parseInt(floorPicker.value);
 
-    // 예외 상황 처리: 이미 해당 층에 서 있을 경우
-    if (systemState.currentFloor === myFloor) {
-        elCountdown.textContent = "이미 해당 층에\n있습니다.";
-        setTimeout(() => elCountdown.textContent = "", 2000);
+    // 사용자가 고른 층에 승강기가 대기 완료 중일 때 인터셉트 예외처리
+    if (elevatorController.virtualFloor === assignedUserFloor) {
+        elTimer.textContent = "이미 해당 층에\n위치해 있습니다.";
+        setTimeout(() => elTimer.textContent = "", 2000);
         return;
     }
 
-    systemState.isMoving = true;
+    elevatorController.isActive = true;
     
-    // 타겟 버튼에 활성화 클래스(빛 효과) 부여
-    const targetButton = clickedDirection === 'up' ? btnUp : btnDown;
-    targetButton.classList.add('active');
+    // 클릭한 타겟 하드웨어 조명 작동
+    const clickedBtn = actionDir === 'up' ? btnUp : btnDown;
+    clickedBtn.classList.add('active');
 
-    // 실측 데이터 간 차이 절대값으로 총 소요시간 자동 환산
-    const startTime = TIME_DATA[systemState.currentFloor];
-    const endTime = TIME_DATA[myFloor];
-    let remainingTime = Math.abs(endTime - startTime);
-    const totalDuration = remainingTime;
+    // 실측 데이터 필드값을 토대로 이동에 드는 총 구간 절대 잔여 시간 도출
+    const startWeight = STEP_TIME_TABLE[elevatorController.virtualFloor];
+    const endWeight = STEP_TIME_TABLE[assignedUserFloor];
+    let countdownClock = Math.abs(endWeight - startWeight);
+    const flightDuration = countdownClock;
 
-    // 움직이는 진행 방향성 기호 확정
-    const directionIndicator = myFloor > systemState.currentFloor ? '↑' : '↓';
-    elArrow.textContent = directionIndicator;
+    // 운행 방향 레이블 화살표 정의
+    const calculatedDir = assignedUserFloor > elevatorController.virtualFloor ? '↑' : '↓';
+    elArrow.textContent = calculatedDir;
 
-    const startFloor = systemState.currentFloor;
-    const targetFloor = myFloor;
+    const sourceFloor = elevatorController.virtualFloor;
+    const targetFloor = assignedUserFloor;
 
-    // 1. 디스플레이 하단 초 단위 카운트다운 가동 (0.05초 단위 부드러운 순환)
-    const tick = 50;
-    systemState.mainTimer = setInterval(() => {
-        remainingTime -= (tick / 1000);
+    // 1. 유리 액정 하단부 0.01초 단위 전개식 실시간 초 계측 루프 엔진
+    const timeFrame = 50;
+    elevatorController.timerCore = setInterval(() => {
+        countdownClock -= (timeFrame / 1000);
 
-        if (remainingTime <= 0) {
-            clearInterval(systemState.mainTimer);
-            clearInterval(systemState.floorTimer);
+        if (countdownClock <= 0) {
+            clearInterval(elevatorController.timerCore);
+            clearInterval(elevatorController.moveCore);
 
-            // 도착 완료 시점 디스플레이 동기화
-            systemState.currentFloor = targetFloor;
-            refreshDisplay();
+            // 타겟 위치 안전 정착 동기화
+            elevatorController.virtualFloor = targetFloor;
+            renderSystemPanel();
             elArrow.textContent = "─";
-            elCountdown.textContent = "0.00초 뒤\n도착 완료";
+            elTimer.textContent = "0.00초 뒤\n도착 완료";
 
-            // 문 열림 상태 유지 후 원상 복귀 리셋 프로세스
+            // 도어 개방 시간 확보용 임시 락 타임아웃
             setTimeout(() => {
-                elCountdown.textContent = "";
-                targetButton.classList.remove('active');
-                systemState.isMoving = false;
-            }, 3000);
+                elTimer.textContent = "";
+                clickedBtn.classList.remove('active');
+                elevatorController.isActive = false;
+            }, 2500);
             return;
         }
 
-        // 사용자가 스케치해 준 양식 그대로 출력 적용
-        elCountdown.textContent = `${remainingTime.toFixed(2)}초 뒤\n도착`;
-    }, tick);
+        // 스케치 노트 설계 데이터 완벽 이식 출력
+        elTimer.textContent = `${countdownClock.toFixed(2)}초 뒤\n뒤 도착`;
+    }, timeFrame);
 
-    // 2. 진짜 엘리베이터처럼 실시간 층수가 차례대로 바뀌며 올라가는 연출
-    const totalFloorsToMove = Math.abs(targetFloor - startFloor);
-    // 각 구간의 정밀 실측 기반 한 층당 주행 인터벌 계산
-    const intervalPerFloor = (totalDuration / totalFloorsToMove) * 1000;
+    // 2. 실제 엘리베이터처럼 층수 눈금이 순차적으로 등간격 점등하며 이동하는 기법
+    const totalFloorsToCross = Math.abs(targetFloor - sourceFloor);
+    const tickInterval = (flightDuration / totalFloorsToCross) * 1000;
 
-    systemState.floorTimer = setInterval(() => {
-        if (systemState.currentFloor !== targetFloor) {
-            systemState.currentFloor += (targetFloor > startFloor) ? 1 : -1;
-            refreshDisplay();
+    elevatorController.moveCore = setInterval(() => {
+        if (elevatorController.virtualFloor !== targetFloor) {
+            elevatorController.virtualFloor += (targetFloor > sourceFloor) ? 1 : -1;
+            renderSystemPanel();
         } else {
-            clearInterval(systemState.floorTimer);
+            clearInterval(elevatorController.moveCore);
         }
-    }, intervalPerFloor);
+    }, tickInterval);
 }
 
-// 버튼 클릭 이벤트 리스너 할당
-btnUp.addEventListener('click', () => callElevator('up'));
-btnDown.addEventListener('click', () => callElevator('down'));
+// 이벤트 인터커넥트 바인딩
+btnUp.addEventListener('click', () => onCallSignal('up'));
+btnDown.addEventListener('click', () => onCallSignal('down'));
 
-// 최초 기기 랜더링 실행
-refreshDisplay();
+// 공장 초기 부팅 전개
+renderSystemPanel();
