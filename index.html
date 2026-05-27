@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>프리미엄 8층 엘리베이터 시스템</title>
+    <title>8층 엘리베이터 시뮬레이터</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div id="current-floor-board">
-        <span class="board-label">SET MY FLOOR</span>
+        <span class="board-label">CURRENT FLOOR</span>
         <select id="floor-picker">
             <option value="1">1F</option>
             <option value="2">2F</option>
@@ -23,26 +23,24 @@
     </div>
 
     <div class="elevator-panel">
-        <div class="panel-inside">
-            <div class="screw top"></div>
-            
-            <div class="black-display">
-                <div class="led-arrow" id="display-arrow">─</div>
-                <div class="led-number" id="display-number">01</div>
-                <div class="led-timer" id="display-timer"></div>
-            </div>
-
-            <div class="button-set">
-                <button id="btn-up" class="metal-button" aria-label="Up">
-                    <svg viewBox="0 0 100 100"><polygon points="50,18 88,82 12,82"/></svg>
-                </button>
-                <button id="btn-down" class="metal-button" aria-label="Down">
-                    <svg viewBox="0 0 100 100"><polygon points="12,18 88,18 50,82"/></svg>
-                </button>
-            </div>
-
-            <div class="screw bottom"></div>
+        <div class="screw top"></div>
+        
+        <div class="black-screen">
+            <div class="led-arrow" id="display-arrow">─</div>
+            <div class="led-number" id="display-number">01</div>
+            <div class="led-timer" id="display-timer"></div>
         </div>
+
+        <div class="button-set">
+            <button id="btn-up" class="panel-button" aria-label="Up">
+                <svg viewBox="0 0 100 100"><polygon points="50,22 85,78 15,78"/></svg>
+            </button>
+            <button id="btn-down" class="panel-button" aria-label="Down">
+                <svg viewBox="0 0 100 100"><polygon points="15,22 85,22 50,78"/></svg>
+            </button>
+        </div>
+
+        <div class="screw bottom"></div>
     </div>
 
     <script src="script.js"></script>
