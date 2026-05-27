@@ -1,42 +1,96 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>엘리베이터 도착 시간</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>엘리베이터 대기 시간 표시 시스템</title>
+    <style>
+        body {
+            background-color: #f0f0f0; /* 배경색 설정 */
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* 스크롤바 방지 */
+        }
 
-<div class="elevator-panel">
+        /* 전체 컨테이너 */
+        .container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background-color: #f0f0f0;
+        }
 
-    <!-- 도착 시간 표시 -->
-    <div class="display" id="display">
-        대기중
-    </div>
+        /* 현재 층수 표시 (왼쪽 상단) */
+        #current-floor {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 2em;
+            color: black;
+            font-weight: bold;
+        }
 
-    <!-- 층 선택 -->
-    <select id="floor">
-        <option value="2">2층</option>
-        <option value="3">3층</option>
-        <option value="4">4층</option>
-        <option value="5">5층</option>
-        <option value="6">6층</option>
-        <option value="7">7층</option>
-        <option value="8">8층</option>
-    </select>
+        /* 엘리베이터 패널 (사진과 동일한 디자인) */
+        .panel {
+            background-color: #cacaca; /* 버튼 패널 색상 */
+            border-radius: 20px;
+            width: 100px;
+            height: 480px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: absolute;
+            right: 40px; /* 오른쪽 상단 위치 */
+            top: 20px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            border: 2px solid #a0a0a0;
+        }
 
-    <!-- 위 버튼 -->
-    <button class="btn" onclick="callElevator(true)">
-        ▲
-    </button>
+        /* 디스플레이 화면 */
+        .display {
+            background-color: #111;
+            width: 70px;
+            height: 180px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+            color: #ff3333; /* 붉은색 텍스트 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: 'Segment7Standard', sans-serif; /* 7세그먼트 폰트 적용 (폰트 파일 필요) */
+            font-weight: bold;
+            box-shadow: inset 0 0 10px rgba(255, 51, 51, 0.3);
+            text-shadow: 0 0 5px rgba(255, 51, 51, 0.7);
+        }
 
-    <!-- 아래 버튼 -->
-    <button class="btn" onclick="callElevator(false)">
-        ▼
-    </button>
+        .direction {
+            font-size: 3em;
+            margin-bottom: -10px;
+        }
 
-</div>
+        .floor {
+            font-size: 4em;
+            margin-top: -10px;
+        }
 
-<script src="script.js"></script>
-</body>
-</html>
+        /* 대기 시간 표시 화면 */
+        .wait-time-display {
+            background-color: #111;
+            width: 70px;
+            height: 60px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            color: #ffaa33; /* 주황색 텍스트 (차별화) */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segment7Standard', sans-serif;
+            font-size: 2em;
+            box-shadow: inset 0 0 10px rgba(255, 170, 51, 0.3);
+            text-shadow: 0 0 5px rgba(255, 170, 51,
