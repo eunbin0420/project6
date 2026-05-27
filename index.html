@@ -1,37 +1,36 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>엘리베이터 대기 시간 안내 시스템</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>엘리베이터 도착 시간</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="container">
-        <div id="current-floor-box">4층</div>
+<div class="elevator">
 
-        <div class="panel">
-            
-            <div class="display">
-                <div class="direction" id="display-direction">↑</div>
-                <div class="floor" id="display-floor">12</div>
-                
-                <div class="arrival-time-text" id="arrival-time-display"></div>
-            </div>
+  <div class="screen">
+    <div id="arrow" class="arrow">▲</div>
+    <div id="floorNumber" class="floor">1</div>
+    <div id="arrivalText" class="arrival">대기 중</div>
+  </div>
 
-            <div class="buttons-area">
-                <button id="up-btn" class="elevator-btn">
-                    <svg viewBox="0 0 100 100"><polygon points="50,15 85,85 15,85"/></svg>
-                </button>
-                <button id="down-btn" class="elevator-btn">
-                    <svg viewBox="0 0 100 100"><polygon points="15,15 85,15 50,85"/></svg>
-                </button>
-            </div>
-            
-        </div>
-    </div>
+  <select id="targetFloor">
+    <option value="1">1층</option>
+    <option value="2">2층</option>
+    <option value="3">3층</option>
+    <option value="4">4층</option>
+    <option value="5">5층</option>
+    <option value="6">6층</option>
+    <option value="7">7층</option>
+    <option value="8">8층</option>
+  </select>
 
-    <script src="script.js"></script>
+  <button onclick="callElevator('up')">▲</button>
+  <button onclick="callElevator('down')">▼</button>
+
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
